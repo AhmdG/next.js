@@ -15,6 +15,9 @@ export function VersionStalenessInfo({
 
   if (!text) return null
 
+  const shouldBeLink = staleness.startsWith('stale')
+  const InfoText = shouldBeLink ? 'a' : 'span'
+
   return (
     <span
       className={cx(
@@ -24,20 +27,18 @@ export function VersionStalenessInfo({
       )}
     >
       <Eclipse className={cx('version-staleness-indicator', indicatorClass)} />
-      <span data-nextjs-version-checker title={title}>
+      <InfoText
+        data-nextjs-version-checker
+        className={cx('version-staleness-info-text', indicatorClass)}
+        title={title}
+        {...(shouldBeLink && {
+          target: '_blank',
+          rel: 'noopener noreferrer',
+          href: 'https://nextjs.org/docs/messages/version-staleness',
+        })}
+      >
         {text}
-      </span>{' '}
-      {staleness === 'fresh' ||
-      staleness === 'newer-than-npm' ||
-      staleness === 'unknown' ? null : (
-        <a
-          target="_blank"
-          rel="noopener noreferrer"
-          href="https://nextjs.org/docs/messages/version-staleness"
-        >
-          (learn more)
-        </a>
-      )}
+      </InfoText>
       {isTurbopack && <span className="turbopack-text">Turbopack</span>}
     </span>
   )
@@ -101,6 +102,15 @@ export const styles = css`
     font-size: 12px;
     font-weight: 500;
     line-height: var(--size-4);
+  }
+
+  .version-staleness-info-text.stale {
+    color: var(--color-amber-900);
+    text-decoration: underline;
+  }
+  .version-staleness-info-text.outdated {
+    color: var(--color-red-900);
+    text-decoration: underline;
   }
 
   .version-staleness-indicator.fresh {
